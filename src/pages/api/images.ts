@@ -1,8 +1,12 @@
-import { NextApiRequest, NextApiResponse } from 'next';
 import fauna from 'faunadb';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const { query } = fauna;
-const client = new fauna.Client({ secret: process.env.FAUNA_API_KEY });
+
+const client = new fauna.Client({
+  secret: process.env.FAUNA_API_KEY,
+  domain: 'db.us.fauna.com',
+});
 
 interface ImagesQueryResponse {
   after?: {
@@ -41,11 +45,11 @@ export default async function handler(
       .then(() => {
         return res.status(201).json({ success: true });
       })
-      .catch(err =>
-        res
+      .catch(err => {
+        return res
           .status(501)
-          .json({ error: `Sorry something Happened! ${err.message}` })
-      );
+          .json({ error: `Sorry something Happened! ${err.message}` });
+      });
   }
 
   if (req.method === 'GET') {
