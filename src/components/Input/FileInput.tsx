@@ -1,32 +1,32 @@
 import {
   Box,
-  FormLabel,
   CircularProgress,
   CircularProgressLabel,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
   Icon,
   Image,
   Text,
-  FormControl,
-  FormErrorMessage,
-  Flex,
-  useToast,
   Tooltip,
+  useToast
 } from '@chakra-ui/react';
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
 import {
-  useState,
-  SetStateAction,
   Dispatch,
-  ForwardRefRenderFunction,
   forwardRef,
+  ForwardRefRenderFunction,
+  SetStateAction,
   useCallback,
   useEffect,
+  useState
 } from 'react';
 import {
   FieldError,
   FieldValues,
-  UseFormSetError,
-  UseFormTrigger,
+  UseFormRegisterReturn,
+  UseFormTrigger
 } from 'react-hook-form';
 import { FiAlertCircle, FiPlus } from 'react-icons/fi';
 import { api } from '../../services/api';
@@ -37,30 +37,29 @@ export interface FileInputProps {
   setImageUrl: Dispatch<SetStateAction<string>>;
   localImageUrl: string;
   setLocalImageUrl: Dispatch<SetStateAction<string>>;
-  setError: UseFormSetError<FieldValues>;
+  setError: () => void;
   onChange: (
     event: React.ChangeEvent<HTMLInputElement>
   ) => Promise<boolean | void>;
   trigger: UseFormTrigger<FieldValues>;
+  register: UseFormRegisterReturn;
 }
 
 const FileInputBase: ForwardRefRenderFunction<
   HTMLInputElement,
   FileInputProps
-> = (
-  {
-    name,
-    error = null,
-    setImageUrl,
-    localImageUrl,
-    setLocalImageUrl,
-    setError,
-    onChange,
-    trigger,
-    ...rest
-  },
-  ref
-) => {
+> = ({
+  name,
+  error = null,
+  setImageUrl,
+  localImageUrl,
+  setLocalImageUrl,
+  setError,
+  onChange,
+  trigger,
+  register,
+  ...rest
+}) => {
   const toast = useToast();
   const [progress, setProgress] = useState(0);
   const [isSending, setIsSending] = useState(false);
@@ -76,7 +75,7 @@ const FileInputBase: ForwardRefRenderFunction<
 
       setImageUrl('');
       setLocalImageUrl('');
-      setError('image', null);
+      setError();
       setIsSending(true);
 
       await onChange(event);
@@ -199,6 +198,11 @@ const FileInputBase: ForwardRefRenderFunction<
                   alignItems="center"
                   justifyContent="center"
                   flexDir="column"
+                  htmlFor="input-file"
+                  as="label"
+                  _hover={{
+                    cursor: 'pointer',
+                  }}
                 >
                   <Icon as={FiPlus} w={14} h={14} />
                   <Text as="span" pt={2} textAlign="center">
@@ -211,16 +215,17 @@ const FileInputBase: ForwardRefRenderFunction<
         )}
         <input
           data-testid={name}
+          title={name}
           disabled={isSending}
-          id={name}
+          id="input-file"
           name={name}
-          onChange={handleImageUpload}
-          ref={ref}
           type="file"
           style={{
             display: 'none',
           }}
           {...rest}
+          {...register}
+          onChange={handleImageUpload}
         />
       </FormLabel>
     </FormControl>

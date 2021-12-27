@@ -1,24 +1,27 @@
-import { forwardRef, ForwardRefRenderFunction } from 'react';
-import { FieldError } from 'react-hook-form';
 import {
   FormControl,
   FormErrorMessage,
   Icon,
   Input as ChakraInput,
   InputProps as ChakraInputProps,
-  Tooltip,
+  Tooltip
 } from '@chakra-ui/react';
+import { forwardRef, ForwardRefRenderFunction } from 'react';
+import { FieldError, UseFormRegisterReturn } from 'react-hook-form';
 import { FiAlertCircle } from 'react-icons/fi';
 
 interface InputProps extends ChakraInputProps {
   name: string;
   error?: FieldError;
+  register: UseFormRegisterReturn;
 }
 
-const TextInputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
-  { name, error = null, ...rest },
-  ref
-) => {
+const TextInputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = ({
+  name,
+  error = null,
+  register,
+  ...rest
+}) => {
   return (
     <FormControl
       display="flex"
@@ -28,8 +31,6 @@ const TextInputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
     >
       <ChakraInput
         aria-label={name}
-        name={name}
-        ref={ref}
         borderColor="transparent"
         bgColor="pGray.800"
         color="pGray.50"
@@ -42,6 +43,7 @@ const TextInputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
         py={6}
         pr={8}
         {...rest}
+        {...register}
       />
 
       {!!error && (
